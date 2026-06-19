@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Account - Quizzer</title>
+    <script src="/static/js/theme.js?v={{ CACHE_VERSION }}"></script>
+    <link rel="stylesheet" href="/static/css/styles.css?v={{ CACHE_VERSION }}">
+</head>
+<body>
+    <div class="auth-wrapper">
+        <div class="auth-content">
+            <div class="auth-card card animate-in">
+                <h2 style="margin-bottom: 30px; font-size: 1.8rem;">Create Account</h2>
+                
+                <div id="error-msg" class="hidden" style="color: white; background-color: var(--color-danger); padding: 12px; border-radius: var(--radius-sm); margin-bottom: 24px; font-size: 0.9rem; font-weight: 500;"></div>
+                
+                <form id="register-form">
+                    <div class="form-group">
+                        <label>Full Name</label>
+                        <input type="text" id="name" placeholder="John Doe" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Email Address</label>
+                        <input type="email" id="email" placeholder="you@example.com" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Password</label>
+                        <input type="password" id="password" placeholder="••••••••" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Account Type</label>
+                        <select id="role">
+                            <option value="Student">Student</option>
+                            <option value="Admin">Teacher / Admin</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 10px;">Sign Up</button>
+                </form>
+                
+                <p style="text-align: center; margin-top: 32px; font-size: 0.9rem; color: var(--color-text-secondary);">
+                    Already have an account? <a href="/login" style="color: var(--color-primary); text-decoration: none; font-weight: 600;">Sign in</a>
+                </p>
+            </div>
+        </div>
+
+        <div class="auth-sidebar" style="border-right: none; border-left: 1px solid var(--color-border);">
+            <div class="bg-blobs">
+                <div class="blob blob-1" style="background: var(--color-accent); top: 20%; right: 20%; left: auto;"></div>
+                <div class="blob blob-3" style="bottom: 10%; right: 10%; left: auto;"></div>
+            </div>
+            <div style="z-index: 10; padding: 40px; max-width: 500px; text-align: right;">
+                <a href="/" class="brand" style="margin-bottom: 40px; font-size: 2rem; justify-content: flex-end;">
+                    <span>Quizzer</span>
+                </a>
+                <h2 style="color: white; font-size: 3rem; margin-bottom: 20px;">Join the Future.</h2>
+                <p style="color: var(--color-text-secondary); font-size: 1.2rem;">
+                    Experience lightning-fast assessments, beautifully designed interfaces, and real-time multiplayer engagement.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <script src="/static/js/api.js?v={{ CACHE_VERSION }}"></script>
+    <script src="/static/js/auth.js?v={{ CACHE_VERSION }}"></script>
+</body>
+</html>

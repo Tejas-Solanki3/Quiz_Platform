@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign In - Quizzer</title>
+    <script src="/static/js/theme.js?v={{ CACHE_VERSION }}"></script>
+    <link rel="stylesheet" href="/static/css/styles.css?v={{ CACHE_VERSION }}">
+</head>
+<body>
+    <div class="auth-wrapper">
+        <div class="auth-sidebar">
+            <div class="bg-blobs">
+                <div class="blob blob-1"></div>
+                <div class="blob blob-2" style="bottom: 20%; right: 20%;"></div>
+            </div>
+            <div style="z-index: 10; padding: 40px; max-width: 500px;">
+                <a href="/" class="brand" style="margin-bottom: 40px; font-size: 2rem;">
+                    <span>Quizzer</span>
+                </a>
+                <h2 style="color: white; font-size: 3rem; margin-bottom: 20px;">Welcome Back.</h2>
+                <p style="color: var(--color-text-secondary); font-size: 1.2rem;">
+                    Sign in to manage your quizzes, view live analytics, and host interactive sessions.
+                </p>
+            </div>
+        </div>
+        
+        <div class="auth-content">
+            <div class="auth-card card animate-in">
+                <h2 style="margin-bottom: 30px; font-size: 1.8rem;">Sign In</h2>
+                
+                <div id="error-msg" class="hidden" style="color: white; background-color: var(--color-danger); padding: 12px; border-radius: var(--radius-sm); margin-bottom: 24px; font-size: 0.9rem; font-weight: 500;"></div>
+                
+                <form id="login-form">
+                    <div class="form-group">
+                        <label>Email Address</label>
+                        <input type="email" id="email" placeholder="you@example.com" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Password</label>
+                        <input type="password" id="password" placeholder="••••••••" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 10px;">Continue</button>
+                </form>
+                
+                <p style="text-align: center; margin-top: 32px; font-size: 0.9rem; color: var(--color-text-secondary);">
+                    Don't have an account? <a href="/register" style="color: var(--color-primary); text-decoration: none; font-weight: 600;">Sign up</a>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <script src="/static/js/api.js?v={{ CACHE_VERSION }}"></script>
+    <script src="/static/js/auth.js?v={{ CACHE_VERSION }}"></script>
+</body>
+</html>

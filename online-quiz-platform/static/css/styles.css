@@ -1,0 +1,468 @@
+@import url('https://fonts.googleapis.com/css2?family=VT323&display=swap');
+
+:root {
+  /* LIGHT THEME (Default) */
+  --color-bg-light: #F2F2F2;
+  --color-bg-card: #FFFFFF;
+  --color-border: #E0E0E0;
+  
+  --color-text-primary: #333333;
+  --color-text-secondary: #666666;
+  
+  --color-primary: #46178f; /* Kahoot Purple */
+  --color-primary-dark: #2c0f59;
+  
+  --color-secondary: #ffffff;
+  
+  --color-red: #E21B3C;
+  --color-red-dark: #b0152e;
+  
+  --color-blue: #1368CE;
+  --color-blue-dark: #0f51a1;
+  
+  --color-yellow: #D89E00;
+  --color-yellow-dark: #a87b00;
+  
+  --color-green: #26890C;
+  --color-green-dark: #1d6b09;
+
+  --color-success: #26890C;
+  --color-danger: #E21B3C;
+  --color-warning: #D89E00;
+
+  --font-sans: 'VT323', monospace;
+
+  --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.1);
+  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 10px 20px rgba(0, 0, 0, 0.15);
+  
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+
+  --input-bg: #f9f9f9;
+}
+
+[data-theme="dark"] {
+  /* DARK THEME */
+  --color-bg-light: #09090b;
+  --color-bg-card: rgba(24, 24, 27, 0.6);
+  --color-border: rgba(255, 255, 255, 0.08);
+  
+  --color-text-primary: #FFFFFF;
+  --color-text-secondary: #A0A0A0;
+  
+  --color-primary: #8B5CF6; /* Lighter Purple for dark mode */
+  --color-primary-dark: #6D28D9;
+  
+  --color-secondary: rgba(255, 255, 255, 0.05);
+
+  --shadow-sm: 0 4px 6px -1px rgba(0, 0, 0, 0.5);
+  --shadow-md: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
+  --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+
+  --input-bg: rgba(0,0,0,0.3);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--font-sans);
+  background-color: var(--color-bg-light);
+  color: var(--color-text-primary);
+  min-height: 100vh;
+  line-height: 1.6;
+  font-size: 26px;
+  -webkit-font-smoothing: antialiased;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Background elements are purely visual, and in dark mode they look cool like glowing orbs */
+.bg-blobs {
+  position: fixed;
+  top: 0; left: 0; width: 100%; height: 100%;
+  pointer-events: none;
+  z-index: -1;
+  overflow: hidden;
+}
+
+.blob {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  opacity: 0.4;
+  animation: float 20s infinite alternate ease-in-out;
+}
+[data-theme="dark"] .blob { opacity: 0.15; }
+
+.blob-1 { top: -10%; left: -10%; width: 50vw; height: 50vw; background: rgba(226, 27, 60, 0.3); }
+.blob-2 { bottom: -10%; right: -10%; width: 60vw; height: 60vw; background: rgba(19, 104, 206, 0.3); animation-delay: -5s; }
+.blob-3 { top: 40%; left: 60%; width: 40vw; height: 40vw; background: rgba(216, 158, 0, 0.3); animation-delay: -10s; }
+
+@keyframes float {
+  0% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(5%, 5%) scale(1.1); }
+  100% { transform: translate(-5%, -5%) scale(0.9); }
+}
+
+/* Typography */
+h1, h2, h3, h4 {
+  font-family: var(--font-sans);
+  font-weight: 800;
+  line-height: 1.2;
+  color: var(--color-text-primary);
+}
+
+.text-gradient-primary {
+  color: var(--color-primary);
+}
+[data-theme="dark"] .text-gradient-primary {
+  background: linear-gradient(135deg, #8B5CF6, #3B82F6);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Layouts */
+.container {
+  max-width: 1040px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+/* Cards */
+.card {
+  background: var(--color-bg-card);
+  border-radius: var(--radius-md);
+  padding: 24px;
+  box-shadow: var(--shadow-sm);
+  border-bottom: 4px solid var(--color-border);
+  transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.3s ease, border-color 0.3s ease;
+}
+[data-theme="dark"] .card {
+  border: 1px solid var(--color-border);
+  backdrop-filter: blur(20px);
+}
+
+.card-hover:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+/* Chunky Arcade Buttons */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 24px;
+  font-family: var(--font-sans);
+  font-weight: 800;
+  font-size: 1rem;
+  text-decoration: none;
+  cursor: pointer;
+  border-radius: var(--radius-sm);
+  transition: all 0.1s ease;
+  border: none;
+  outline: none;
+  box-shadow: 0 4px 0 rgba(0,0,0,0.2);
+}
+
+.btn:active {
+  transform: translateY(4px);
+  box-shadow: 0 0px 0 rgba(0,0,0,0.2);
+}
+
+.btn-primary {
+  background: var(--color-primary);
+  color: white;
+  box-shadow: 0 4px 0 var(--color-primary-dark);
+}
+
+.btn-primary:active {
+  box-shadow: 0 0px 0 var(--color-primary-dark);
+}
+
+.btn-secondary {
+  background: var(--color-secondary);
+  color: var(--color-text-primary);
+  box-shadow: 0 4px 0 var(--color-border);
+}
+
+.btn-secondary:active {
+  box-shadow: 0 0px 0 var(--color-border);
+}
+
+.btn-success { background: var(--color-success); color: white; box-shadow: 0 4px 0 var(--color-green-dark); }
+.btn-danger { background: var(--color-danger); color: white; box-shadow: 0 4px 0 var(--color-red-dark); }
+.btn-warning { background: var(--color-warning); color: white; box-shadow: 0 4px 0 var(--color-yellow-dark); }
+
+/* Forms */
+.form-group {
+  margin-bottom: 20px;
+  text-align: left;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 0.9rem;
+  color: var(--color-text-secondary);
+  font-weight: 700;
+}
+
+.form-group input, .form-group select, .form-group textarea {
+  width: 100%;
+  padding: 14px 16px;
+  background: var(--input-bg);
+  border: 2px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  color: var(--color-text-primary);
+  font-family: var(--font-sans);
+  font-size: 1rem;
+  font-weight: 600;
+  transition: border-color 0.15s ease, background 0.3s ease;
+}
+
+.form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+  border-color: var(--color-primary);
+  outline: none;
+  background: var(--color-bg-card);
+}
+
+/* Nav */
+nav {
+  padding: 16px 0;
+  background: transparent;
+  transition: background 0.3s ease;
+}
+[data-theme="dark"] nav {
+  box-shadow: none;
+  border-bottom: none;
+}
+
+.nav-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.brand {
+  font-weight: 900;
+  font-size: 1.5rem;
+  color: var(--color-primary);
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  letter-spacing: -0.02em;
+}
+
+.brand span {
+  font-weight: 800;
+  color: var(--color-blue);
+}
+
+/* Theme Toggle Button */
+.theme-toggle {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 50%;
+  color: var(--color-text-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s;
+}
+.theme-toggle:hover { background: rgba(128,128,128,0.1); }
+.theme-toggle svg { width: 20px; height: 20px; }
+
+/* Auth Layout */
+.auth-wrapper {
+  display: flex;
+  min-height: 100vh;
+  align-items: center;
+  justify-content: center;
+}
+.auth-content { width: 100%; max-width: 440px; padding: 24px; }
+
+/* Dashboard Grid */
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 20px;
+  margin-top: 24px;
+}
+.stat-value {
+  font-size: 3rem;
+  font-weight: 900;
+  color: var(--color-primary);
+  margin-top: 8px;
+  letter-spacing: -0.04em;
+}
+
+/* Quiz Options (Kahoot Style) */
+.quiz-options {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+  margin-top: 32px;
+}
+@media(min-width: 768px) {
+  .quiz-options { grid-template-columns: 1fr 1fr; }
+}
+.option-btn {
+  position: relative;
+  display: flex;
+  align-items: center;
+  padding: 20px;
+  font-family: var(--font-sans);
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: white;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all 0.1s ease;
+  border: none;
+  outline: none;
+  text-align: left;
+  min-height: 100px;
+}
+.option-btn:active { transform: translateY(6px); }
+.option-btn .shape-icon {
+  width: 40px;
+  height: 40px;
+  margin-right: 20px;
+  flex-shrink: 0;
+  fill: white;
+}
+.option-btn .option-text {
+  flex-grow: 1;
+  word-break: break-word;
+}
+
+/* Kahoot Colors and Drop Shadows */
+.opt-0 { background: var(--color-red); box-shadow: 0 6px 0 var(--color-red-dark); }
+.opt-0:active { box-shadow: 0 0px 0 var(--color-red-dark); }
+
+.opt-1 { background: var(--color-blue); box-shadow: 0 6px 0 var(--color-blue-dark); }
+.opt-1:active { box-shadow: 0 0px 0 var(--color-blue-dark); }
+
+.opt-2 { background: var(--color-yellow); box-shadow: 0 6px 0 var(--color-yellow-dark); }
+.opt-2:active { box-shadow: 0 0px 0 var(--color-yellow-dark); }
+
+.opt-3 { background: var(--color-green); box-shadow: 0 6px 0 var(--color-green-dark); }
+.opt-3:active { box-shadow: 0 0px 0 var(--color-green-dark); }
+
+.player-options .option-btn {
+  height: 35vh;
+  min-height: 150px;
+  justify-content: center;
+  align-items: center;
+}
+.player-options .shape-icon {
+  width: 80px;
+  height: 80px;
+  margin: 0;
+}
+
+/* Timer */
+.timer-container {
+  position: relative;
+  width: 80px;
+  height: 80px;
+  margin: 0 auto 24px auto;
+  background: rgba(128,128,128,0.1);
+  border-radius: 50%;
+}
+.timer-svg { transform: rotate(-90deg); width: 100%; height: 100%; }
+.timer-circle-bg { fill: none; stroke: rgba(128,128,128,0.1); stroke-width: 6; }
+.timer-circle {
+  fill: none; stroke: var(--color-primary); stroke-width: 6; stroke-linecap: round;
+  transition: stroke-dashoffset 1s linear, stroke 0.3s;
+}
+.timer-text {
+  position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+  font-size: 1.5rem; font-weight: 800; color: var(--color-text-primary);
+}
+
+/* Podium Leaderboard */
+.podium-container {
+  display: flex; align-items: flex-end; justify-content: center; gap: 16px; margin-top: 40px; height: 250px;
+}
+.podium-place {
+  width: 120px; border-top-left-radius: var(--radius-sm); border-top-right-radius: var(--radius-sm);
+  display: flex; flex-direction: column; align-items: center; justify-content: flex-start;
+  padding-top: 16px; position: relative; background: var(--color-primary); color: white;
+  box-shadow: 0 -4px 0 var(--color-primary-dark) inset;
+}
+.podium-1 { height: 100%; background: #D89E00; box-shadow: 0 -4px 0 #a87b00 inset; }
+.podium-2 { height: 75%; background: #A0A0A0; box-shadow: 0 -4px 0 #777777 inset; }
+.podium-3 { height: 50%; background: #CD7F32; box-shadow: 0 -4px 0 #995b1e inset; }
+.avatar {
+  width: 60px; height: 60px; border-radius: 50%; background: var(--color-bg-card);
+  display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 1.5rem;
+  position: absolute; top: -30px; border: 4px solid var(--color-bg-light); color: var(--color-text-primary);
+  box-shadow: var(--shadow-sm);
+}
+
+/* Scroll Animations */
+.animate-in {
+  animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+  opacity: 0; transform: scale(0.9);
+}
+@keyframes popIn {
+  0% { opacity: 0; transform: scale(0.8); }
+  100% { opacity: 1; transform: scale(1); }
+}
+.delay-1 { animation-delay: 0.1s; }
+.delay-2 { animation-delay: 0.2s; }
+.delay-3 { animation-delay: 0.3s; }
+
+/* Motion Reveal Classes */
+.reveal {
+  opacity: 0; transform: translateY(40px);
+  transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+}
+.reveal.visible { opacity: 1; transform: translateY(0); }
+
+/* Confetti Container */
+#confetti-canvas { position: fixed; top: 0; left: 0; right: 0; bottom: 0; pointer-events: none; z-index: 1000; }
+
+.skeleton {
+  background: linear-gradient(90deg, rgba(128,128,128,0.1) 25%, rgba(128,128,128,0.2) 50%, rgba(128,128,128,0.1) 75%);
+  background-size: 200% 100%; animation: loading 1.5s infinite; border-color: transparent !important; color: transparent !important;
+}
+@keyframes loading { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+
+/* Feature Grid */
+.feature-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 24px; margin-top: 40px; }
+
+/* Utilities */
+.hidden { display: none !important; }
+
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+  body { font-size: 16px; }
+  .btn { padding: 8px 16px; font-size: 0.9rem; }
+  h1 { font-size: 2rem !important; }
+  h2 { font-size: 1.5rem !important; }
+  h3 { font-size: 1.2rem !important; }
+  .nav-container { flex-direction: column; gap: 16px; align-items: center; }
+  .nav-container > div:last-child { flex-wrap: wrap; justify-content: center; width: 100%; gap: 10px; }
+  .card { padding: 16px; }
+  .quiz-options { grid-template-columns: 1fr !important; }
+  .hero-buttons { width: 100%; }
+  .join-box { flex-direction: row; align-items: center; border-radius: 50px; width: 100%; box-sizing: border-box; }
+  .join-box input { width: 100%; border-radius: 30px !important; padding: 0 12px; font-size: 1rem; flex: 1; }
+  .join-box button { width: auto; border-radius: 30px !important; padding: 10px 20px; }
+  .container { padding: 0 16px; }
+  .timer-container { width: 60px !important; height: 60px !important; }
+  .timer-svg { width: 60px; height: 60px; }
+  .timer-circle, .timer-circle-bg { r: 28; cx: 30; cy: 30; }
+}

@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Quizzer</title>
+    <script src="/static/js/theme.js?v={{ CACHE_VERSION }}"></script>
+    <link rel="stylesheet" href="/static/css/styles.css?v={{ CACHE_VERSION }}">
+</head>
+<body>
+    <div class="bg-blobs">
+        <div class="blob blob-1" style="opacity: 0.15; top: -20%;"></div>
+    </div>
+
+    <nav>
+        <div class="container nav-container">
+            <a href="/dashboard" class="brand">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 2L2 7L12 12L22 7L12 2Z" fill="#8B5CF6"/>
+                    <path d="M2 17L12 22L22 17" stroke="#3B82F6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M2 12L12 17L22 12" stroke="#06B6D4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                <span>Quizzer</span>
+            </a>
+            
+                <div class="nav-links" style="display: flex; align-items: center; gap: 15px;">
+                <!-- Theme Toggle -->
+                <button class="theme-toggle" onclick="toggleTheme()" title="Toggle Theme">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+</button>
+                <span id="user-info" style="font-weight: 500; color: var(--color-text-secondary);"></span>
+                <button class="btn btn-secondary" style="padding: 8px 16px; font-size: 0.9rem;" onclick="logout()">Sign Out</button>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container animate-in">
+        <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 40px;">
+            <div>
+                <p style="color: var(--color-text-secondary); margin-bottom: 5px; font-weight: 500; font-family: var(--font-display);">OVERVIEW</p>
+                <h1 id="welcome-msg" style="margin-bottom: 0;">Welcome back.</h1>
+            </div>
+            <div id="admin-actions" class="hidden">
+                <a href="/create_quiz" class="btn btn-primary">Create Quiz</a>
+            </div>
+        </div>
+        
+        <!-- Admin Dashboard -->
+        <div id="admin-view" class="hidden">
+            <div class="dashboard-grid">
+                <div class="card card-hover">
+                    <p style="color: var(--color-text-secondary); font-weight: 500;">TOTAL QUIZZES</p>
+                    <div id="stat-quizzes" class="stat-value skeleton">0</div>
+                </div>
+                <div class="card card-hover">
+                    <p style="color: var(--color-text-secondary); font-weight: 500;">TOTAL PARTICIPANTS</p>
+                    <div id="stat-attempts" class="stat-value skeleton">0</div>
+                </div>
+            </div>
+            
+            <h2 style="margin-top: 60px; margin-bottom: 24px; font-size: 1.5rem;">Your Quizzes</h2>
+            <div id="admin-quizzes-list">
+                <div class="loader"></div>
+            </div>
+
+            <h2 style="margin-top: 60px; margin-bottom: 24px; font-size: 1.5rem;">Recent History</h2>
+            <div id="admin-history-list">
+                <p style="color: var(--color-text-secondary);">Loading history...</p>
+            </div>
+
+        </div>
+
+        <!-- Student Dashboard -->
+        <div id="student-view" class="hidden">
+            <h2 style="margin-top: 40px; margin-bottom: 24px; font-size: 1.5rem;">Recent History</h2>
+            <div id="student-history-list">
+                <div class="card skeleton" style="height: 80px; margin-bottom: 16px;"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/static/js/api.js?v={{ CACHE_VERSION }}"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            const user = getUser();
+            if (!user) {
+                window.location.href = '/login';
+                return;
+            }
+
+            document.getElementById('user-info').innerHTML = `${user.name} &nbsp;&bull;&nbsp; <span style="color:var(--color-primary);">${user.role}</span>`;
+            document.getElementById('welcome-msg').textContent = `Welcome, ${user.name}.`;
+
+            if (user.role === 'Admin') {
+                document.getElementById('admin-actions').classList.remove('hidden');
+                document.getElementById('admin-view').classList.remove('hidden');
+                loadAdminDashboard();
+            } else {
+                document.getElementById('student-view').classList.remove('hidden');
+                loadStudentDashboard();
+            }
+        });
+
+        async function loadAdminDashboard() {
+            try {
+                const [quizzes, history] = await Promise.all([
+                    api.get('/quizzes?published=false'),
+                    api.get('/live/history')
+                ]);
+                
+                // Calculate total participants
+                const totalParticipants = history.reduce((sum, h) => sum + (h.participants ? h.participants.length : 0), 0);
+                document.getElementById('stat-quizzes').textContent = quizzes.length;
+                document.getElementById('stat-quizzes').classList.remove('skeleton');
+                document.getElementById('stat-attempts').textContent = totalParticipants;
+                document.getElementById('stat-attempts').classList.remove('skeleton');
+
+                let html = '';
+                quizzes.forEach(q => {
+                    html += `
+                        <div class="card card-hover" style="margin-bottom: 16px; display:flex; justify-content:space-between; align-items:center;">
+                            <div>
+                                <h3 style="margin-bottom: 4px;">${q.title}</h3>
+                                <p style="color: var(--color-text-secondary); font-size: 0.9rem;">${q.questions.length} Questions</p>
+                            </div>
+                            <div style="display:flex; gap: 10px;">
+                                <button class="btn btn-primary" onclick="hostLiveQuiz('${q._id}')">Host Live</button>
+                                <button class="btn btn-secondary" style="color: var(--color-danger); border-color: rgba(239,68,68,0.2);" onclick="deleteQuiz('${q._id}')">Delete</button>
+                            </div>
+                        </div>
+                    `;
+                });
+                document.getElementById('admin-quizzes-list').innerHTML = html || '<p style="color: var(--color-text-secondary);">No quizzes created yet.</p>';
+
+                let hHtml = '';
+                history.slice(0, 5).forEach(h => {
+                    const date = h.created_at ? new Date(h.created_at).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' }) : 'Unknown Date';
+                    hHtml += `
+                        <div class="card card-hover" style="margin-bottom: 16px; padding: 20px;">
+                            <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom: 10px;">
+                                <h3 style="font-size: 1.1rem; margin:0;">${h.quiz_title}</h3>
+                                <span style="background: rgba(139,92,246,0.1); color: var(--color-primary); padding: 4px 8px; border-radius: 4px; font-size: 0.8rem; font-weight: 700;">${h.room_code}</span>
+                            </div>
+                            <p style="color: var(--color-text-secondary); font-size: 0.9rem; margin-bottom: 0;">
+                                ${date} &bull; ${h.participants ? h.participants.length : 0} Participants
+                            </p>
+                        </div>
+                    `;
+                });
+                document.getElementById('admin-history-list').innerHTML = hHtml || '<p style="color: var(--color-text-secondary);">No history found.</p>';
+
+            } catch (err) {
+                document.getElementById('admin-quizzes-list').innerHTML = `<p style="color:var(--color-danger)">Error: ${err.message}</p>`;
+            }
+        }
+
+        async function loadStudentDashboard() {
+            try {
+                const history = await api.get('/results');
+
+                let hHtml = '';
+                history.sort((a,b) => new Date(b.submitted_at) - new Date(a.submitted_at));
+                history.slice(0, 5).forEach(h => {
+                    const date = new Date(h.submitted_at).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' });
+                    hHtml += `
+                        <div class="card card-hover" style="padding: 20px 24px; display:flex; justify-content:space-between; align-items:center; margin-bottom: 12px;">
+                            <div>
+                                <span style="color: var(--color-text-secondary); font-size: 0.85rem;">${date}</span>
+                                <div style="font-weight: 600; margin-top: 4px;">Score: ${h.score} <span style="color: var(--color-text-secondary); font-weight: normal;">(${h.percentage.toFixed(0)}%)</span></div>
+                            </div>
+                            <a href="/results/${h._id}" class="btn btn-secondary" style="padding: 8px 16px; font-size: 0.9rem;">View</a>
+                        </div>
+                    `;
+                });
+                document.getElementById('student-history-list').innerHTML = hHtml || '<p style="color: var(--color-text-secondary);">No history found.</p>';
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        async function hostLiveQuiz(quizId) {
+            try {
+                const session = await api.post('/live/create', { quiz_id: quizId });
+                window.location.href = `/live_quiz/${session.room_code}?host=true`;
+            } catch (err) {
+                alert('Error starting live session: ' + err.message);
+            }
+        }
+
+        async function deleteQuiz(id) {
+            if(confirm('Are you sure you want to delete this quiz?')) {
+                await api.delete(`/quizzes/${id}`);
+                loadAdminDashboard();
+            }
+        }
+    </script>
+</body>
+</html>

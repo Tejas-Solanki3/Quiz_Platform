@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz Results - Quizzer</title>
+    <script src="/static/js/theme.js?v={{ CACHE_VERSION }}"></script>
+    <link rel="stylesheet" href="/static/css/styles.css?v={{ CACHE_VERSION }}">
+</head>
+<body>
+    <div class="bg-blobs">
+        <div class="blob blob-3" style="opacity: 0.1;"></div>
+    </div>
+
+    <nav>
+        <div class="container nav-container">
+            <a href="/dashboard" class="brand">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 2L2 7L12 12L22 7L12 2Z" fill="#8B5CF6"/>
+                    <path d="M2 17L12 22L22 17" stroke="#3B82F6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M2 12L12 17L22 12" stroke="#06B6D4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                <span>Quizzer</span>
+            </a>
+            
+                <div class="nav-links" >
+                <!-- Theme Toggle -->
+                <button class="theme-toggle" onclick="toggleTheme()" title="Toggle Theme">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+</button>
+                <a href="/dashboard" class="btn btn-secondary">Dashboard</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container animate-in" style="max-width: 800px; padding-top: 40px; padding-bottom: 60px;">
+        <div id="results-content">
+            <div class="loader" style="margin: 100px auto;"></div>
+        </div>
+    </div>
+
+    <script src="/static/js/api.js?v={{ CACHE_VERSION }}"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            const attemptId = "{{ attempt_id }}";
+            try {
+                const attempt = await api.get(`/results/${attemptId}`);
+                
+                const isPass = attempt.percentage >= 50;
+                const statusColor = isPass ? 'var(--color-success)' : 'var(--color-danger)';
+                const statusBg = isPass ? 'rgba(16, 185, 129, 0.1)' : 'rgba(239, 68, 68, 0.1)';
+
+                let html = `
+                    <div class="card" style="text-align: center; margin-bottom: 40px; border-color: rgba(255,255,255,0.1); background: ${statusBg};">
+                        <p style="font-family: var(--font-display); font-weight: 500; color: var(--color-text-secondary); margin-bottom: 10px;">FINAL SCORE</p>
+                        <h1 style="font-size: 5rem; margin-bottom: 0; line-height: 1;" class="text-gradient-primary">
+                            ${attempt.score} <span style="font-size: 2rem; color: var(--color-text-secondary);">/ ${attempt.quiz.questions.length}</span>
+                        </h1>
+                        <h3 style="color: ${statusColor}; font-size: 2rem; margin-top: 10px;">
+                            ${attempt.percentage.toFixed(0)}%
+                        </h3>
+                    </div>
+                    <h2 style="margin-bottom: 24px; font-size: 1.5rem;">Detailed Review</h2>
+                `;
+                
+                attempt.quiz.questions.forEach((q, idx) => {
+                    const userAns = attempt.answers[idx] || attempt.answers[String(idx)];
+                    const isCorrect = userAns === q.correct_answer;
+                    const cardBg = isCorrect ? 'rgba(16, 185, 129, 0.05)' : 'rgba(239, 68, 68, 0.05)';
+                    const cardBorder = isCorrect ? 'rgba(16, 185, 129, 0.3)' : 'rgba(239, 68, 68, 0.3)';
+                    const icon = isCorrect ? 
+                        `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--color-success)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>` : 
+                        `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--color-danger)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>`;
+
+                    html += `
+                        <div class="card" style="margin-bottom: 16px; background: ${cardBg}; border-color: ${cardBorder}; padding: 24px;">
+                            <div style="display: flex; gap: 16px; align-items: flex-start;">
+                                <div style="margin-top: 4px;">${icon}</div>
+                                <div style="flex: 1;">
+                                    <p style="font-size: 1.1rem; font-weight: 500; margin-bottom: 16px; color: white;">
+                                        <span style="color: var(--color-text-secondary); margin-right: 8px;">${idx+1}.</span>${q.question_text}
+                                    </p>
+                                    
+                                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                                        <div style="background: rgba(0,0,0,0.3); padding: 12px 16px; border-radius: var(--radius-sm); border: 1px solid rgba(255,255,255,0.05);">
+                                            <p style="font-size: 0.8rem; color: var(--color-text-secondary); margin-bottom: 4px; text-transform: uppercase; letter-spacing: 1px;">Your Answer</p>
+                                            <p style="font-weight: 500; color: ${isCorrect ? 'var(--color-success)' : 'var(--color-danger)'};">${userAns || '<span style="opacity:0.5">Skipped</span>'}</p>
+                                        </div>
+                                        ${!isCorrect ? `
+                                            <div style="background: rgba(16,185,129,0.1); padding: 12px 16px; border-radius: var(--radius-sm); border: 1px solid rgba(16,185,129,0.2);">
+                                                <p style="font-size: 0.8rem; color: var(--color-text-secondary); margin-bottom: 4px; text-transform: uppercase; letter-spacing: 1px;">Correct Answer</p>
+                                                <p style="font-weight: 500; color: var(--color-success);">${q.correct_answer}</p>
+                                            </div>
+                                        ` : ''}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+
+                document.getElementById('results-content').innerHTML = html;
+            } catch (err) {
+                document.getElementById('results-content').innerHTML = `
+                    <div class="card" style="text-align: center; border-color: rgba(239, 68, 68, 0.3); background: rgba(239, 68, 68, 0.05);">
+                        <p style="color: var(--color-danger); font-size: 1.2rem;">Error loading results: ${err.message}</p>
+                    </div>
+                `;
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Practice Quiz - Quizzer</title>
+    <script src="/static/js/theme.js?v={{ CACHE_VERSION }}"></script>
+    <link rel="stylesheet" href="/static/css/styles.css?v={{ CACHE_VERSION }}">
+    <style>
+        body { background: #000; } /* Immersive pitch black mode for quiz */
+        .container { max-width: 900px; padding-top: 5vh; }
+    </style>
+</head>
+<body>
+
+    <nav style="background: transparent; border: none; padding-top: 20px;">
+        <div class="container nav-container" style="max-width: 900px;">
+            <a href="/dashboard" class="brand" style="font-size: 1.2rem;">&larr; Leave</a>
+            
+                <div class="nav-links" >
+                <!-- Theme Toggle -->
+                <button class="theme-toggle" onclick="toggleTheme()" title="Toggle Theme">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+</button>
+                <span id="user-info" style="font-weight: 600; color: rgba(255,255,255,0.5);"></span>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div id="quiz-container" style="position: relative; z-index: 10;">
+            <div class="card" style="text-align: center; border: none; background: transparent; box-shadow: none;">
+                <div class="loader"></div>
+            </div>
+        </div>
+    </div>
+    
+    <canvas id="confetti-canvas"></canvas>
+
+    <script src="/static/js/api.js?v={{ CACHE_VERSION }}"></script>
+    <script src="/static/js/quiz.js?v={{ CACHE_VERSION }}"></script>
+    <script>
+        const quizId = "{{ quiz_id }}";
+        let quizSession;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const user = getUser();
+            if (!user) window.location.href = '/login';
+            document.getElementById('user-info').textContent = user.name;
+
+            quizSession = new QuizSession(quizId, 'quiz-container');
+            quizSession.init();
+        });
+    </script>
+</body>
+</html>

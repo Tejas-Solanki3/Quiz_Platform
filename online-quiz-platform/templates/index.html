@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quizzer - The Ultimate Live Quiz Platform</title>
+    <link rel="stylesheet" href="/static/css/styles.css?v={{ CACHE_VERSION }}">
+    <script src="/static/js/theme.js?v={{ CACHE_VERSION }}"></script>
+    <style>
+        .hero {
+            min-height: 90vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 40px 20px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .hero h1 {
+            font-size: clamp(3rem, 8vw, 6rem);
+            line-height: 1.1;
+            letter-spacing: -0.04em;
+            margin-bottom: 24px;
+            z-index: 10;
+        }
+
+        .hero p {
+            font-size: clamp(1.2rem, 3vw, 1.5rem);
+            color: var(--color-text-secondary);
+            max-width: 600px;
+            margin-bottom: 40px;
+            z-index: 10;
+            font-weight: 600;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 16px;
+            z-index: 10;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .hero-buttons .btn {
+            font-size: 1.2rem;
+            padding: 16px 32px;
+            border-radius: 40px;
+        }
+
+        .join-box {
+            background: var(--color-bg-card);
+            border: 2px solid var(--color-border);
+            border-radius: 40px;
+            padding: 8px;
+            display: flex;
+            align-items: center;
+            box-shadow: var(--shadow-md);
+            transition: transform 0.3s ease;
+        }
+        
+        .join-box:focus-within {
+            border-color: var(--color-primary);
+            transform: scale(1.02);
+        }
+
+        .join-box input {
+            border: none;
+            background: transparent;
+            font-size: 1.2rem;
+            padding: 10px 20px;
+            outline: none;
+            width: 200px;
+            font-weight: 800;
+            text-align: center;
+            color: var(--color-text-primary);
+        }
+
+        .join-box button {
+            border-radius: 30px;
+            margin: 0;
+            box-shadow: none !important;
+        }
+        .join-box button:active { transform: none; }
+
+        .glow-orb {
+            position: absolute;
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, var(--color-primary) 0%, transparent 70%);
+            opacity: 0.15;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 0;
+            pointer-events: none;
+            filter: blur(50px);
+        }
+        [data-theme="dark"] .glow-orb { opacity: 0.25; }
+
+        .feature-card {
+            background: var(--color-bg-card);
+            padding: 40px;
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--color-border);
+            text-align: left;
+            transition: all 0.3s ease;
+        }
+        .feature-card:hover {
+            transform: translateY(-10px);
+            border-color: var(--color-primary);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+        .feature-icon {
+            width: 60px; height: 60px;
+            background: rgba(139, 92, 246, 0.1);
+            color: var(--color-primary);
+            border-radius: 20px;
+            display: flex; align-items: center; justify-content: center;
+            margin-bottom: 24px;
+        }
+        .feature-icon svg { width: 30px; height: 30px; stroke-width: 2.5; }
+    </style>
+</head>
+<body>
+    <div class="bg-blobs">
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+        <div class="blob blob-3"></div>
+    </div>
+
+    <nav>
+        <div class="container nav-container">
+            <a href="/" class="brand">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+                <span>Quizzer</span>
+            </a>
+            <div style="display: flex; gap: 16px; align-items: center;">
+                <button class="theme-toggle" onclick="toggleTheme()" title="Toggle Theme">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+                </button>
+                <div id="auth-buttons"></div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container">
+        <section class="hero reveal">
+            <div class="glow-orb"></div>
+            <h1>Make learning <br><span class="text-gradient-primary">awesome.</span></h1>
+            <p>Host live interactive quizzes, engage your audience, and analyze results in real-time with our ultra-fast platform.</p>
+            
+            <div class="hero-buttons">
+                <div class="join-box">
+                    <input type="text" id="game-pin" placeholder="Game PIN" maxlength="6" autocomplete="off">
+                    <button class="btn btn-primary" onclick="joinGame()">Enter</button>
+                </div>
+            </div>
+        </section>
+
+
+    </main>
+
+    <script>
+        function checkAuth() {
+            const token = localStorage.getItem('token');
+            const authDiv = document.getElementById('auth-buttons');
+            if (token) {
+                authDiv.innerHTML = `<a href="/dashboard" class="btn btn-secondary" style="border-radius: 30px;">Dashboard</a>`;
+            } else {
+                authDiv.innerHTML = `
+                    <a href="/login" style="font-weight: 700; color: var(--color-text-primary); text-decoration: none; margin-right: 16px;">Log in</a>
+                    <a href="/register" class="btn btn-primary" style="border-radius: 30px;">Sign up</a>
+                `;
+            }
+        }
+
+        function joinGame() {
+            const pin = document.getElementById('game-pin').value.trim().toUpperCase();
+            if (pin.length === 6) {
+                window.location.href = `/live_quiz/${pin}`;
+            } else {
+                alert("Please enter a valid 6-character Game PIN.");
+            }
+        }
+
+        document.getElementById('game-pin').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') joinGame();
+        });
+
+        checkAuth();
+    </script>
+</body>
+</html>

@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Leaderboard - Quizzer</title>
+    <script src="/static/js/theme.js?v={{ CACHE_VERSION }}"></script>
+    <link rel="stylesheet" href="/static/css/styles.css?v={{ CACHE_VERSION }}">
+</head>
+<body>
+    <div class="bg-blobs">
+        <div class="blob blob-2" style="opacity: 0.1; top: -10%;"></div>
+    </div>
+
+    <nav>
+        <div class="container nav-container">
+            <a href="/dashboard" class="brand">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 2L2 7L12 12L22 7L12 2Z" fill="#8B5CF6"/>
+                    <path d="M2 17L12 22L22 17" stroke="#3B82F6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M2 12L12 17L22 12" stroke="#06B6D4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                <span>Quizzer</span>
+            </a>
+            
+                <div class="nav-links" >
+                <!-- Theme Toggle -->
+                <button class="theme-toggle" onclick="toggleTheme()" title="Toggle Theme">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+</button>
+                <a href="/dashboard" class="btn btn-secondary">Dashboard</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container animate-in" style="max-width: 800px; padding-top: 50px;">
+        <div style="text-align: center; margin-bottom: 40px;">
+            <p style="color: var(--color-text-secondary); font-family: var(--font-display); font-weight: 500;">LIVE RESULTS</p>
+            <h1 style="font-size: 3rem; margin-bottom: 20px;">Room: <span class="text-gradient-primary">{{ room_code }}</span></h1>
+        </div>
+
+        <div id="leaderboard-content" style="min-height: 400px; position: relative;">
+            <div class="loader" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);"></div>
+        </div>
+        
+        <div style="text-align: center; margin-top: 40px;">
+            <a href="/dashboard" class="btn btn-primary" style="padding: 14px 40px;">Back to Dashboard</a>
+        </div>
+    </div>
+
+    <script src="/static/js/api.js?v={{ CACHE_VERSION }}"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            const roomCode = "{{ room_code }}";
+            try {
+                const session = await api.get(`/live/${roomCode}`);
+                renderLeaderboard(session.leaderboard);
+            } catch (err) {
+                document.getElementById('leaderboard-content').innerHTML = `
+                    <div class="card" style="text-align: center; border-color: rgba(239, 68, 68, 0.3); background: rgba(239, 68, 68, 0.05);">
+                        <p style="color: var(--color-danger); font-size: 1.2rem;">Error: ${err.message}</p>
+                    </div>
+                `;
+            }
+        });
+
+        function renderLeaderboard(leaderboard) {
+            if (!leaderboard || leaderboard.length === 0) {
+                document.getElementById('leaderboard-content').innerHTML = `
+                    <div class="card" style="text-align: center;">
+                        <p style="color: var(--color-text-secondary); font-size: 1.2rem;">No participants yet.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            let podiumHtml = '';
+            if(leaderboard.length > 0) {
+                if(leaderboard[0]) podiumHtml += `<div class="podium-place podium-1 delay-2 animate-in"><div class="avatar" style="border-color: #FACC15; background: rgba(250,204,21,0.2); color: #FACC15;">1</div><div style="font-family:var(--font-display); font-weight:700; font-size:1.5rem; margin-top:20px;">${leaderboard[0].name}</div><div style="color:var(--color-text-secondary)">${leaderboard[0].score} pts</div></div>`;
+                if(leaderboard[1]) podiumHtml = `<div class="podium-place podium-2 delay-1 animate-in"><div class="avatar" style="border-color: #94A3B8; background: rgba(148,163,184,0.2); color: #94A3B8;">2</div><div style="font-family:var(--font-display); font-weight:700; font-size:1.2rem; margin-top:20px;">${leaderboard[1].name}</div><div style="color:var(--color-text-secondary)">${leaderboard[1].score} pts</div></div>` + podiumHtml;
+                if(leaderboard[2]) podiumHtml += `<div class="podium-place podium-3 delay-3 animate-in"><div class="avatar" style="border-color: #B45309; background: rgba(180,83,9,0.2); color: #B45309;">3</div><div style="font-family:var(--font-display); font-weight:700; font-size:1.2rem; margin-top:20px;">${leaderboard[2].name}</div><div style="color:var(--color-text-secondary)">${leaderboard[2].score} pts</div></div>`;
+            }
+
+            let listHtml = '';
+            leaderboard.slice(3).forEach((p, idx) => {
+                listHtml += `
+                    <div class="card animate-in" style="display:flex; justify-content:space-between; align-items:center; padding: 20px 24px; margin-bottom: 12px; animation-delay: ${0.4 + idx*0.1}s;">
+                        <div style="display:flex; align-items:center; gap: 20px;">
+                            <span style="font-family: var(--font-display); font-size: 1.5rem; font-weight: 700; color: var(--color-text-secondary); width: 30px;">${idx+4}</span>
+                            <span style="font-size: 1.2rem; font-weight: 600;">${p.name}</span>
+                        </div>
+                        <span style="font-family: var(--font-display); font-size: 1.5rem; font-weight: 700; color: var(--color-primary);">${p.score} <span style="font-size: 1rem; color: var(--color-text-secondary);">pts</span></span>
+                    </div>
+                `;
+            });
+
+            document.getElementById('leaderboard-content').innerHTML = `
+                <div class="podium-container" style="margin-bottom: 40px; margin-top: 20px;">
+                    ${podiumHtml}
+                </div>
+                ${listHtml}
+            `;
+        }
+    </script>
+</body>
+</html>

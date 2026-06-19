@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Live Session - Quizzer</title>
+    <link rel="stylesheet" href="/static/css/styles.css?v={{ CACHE_VERSION }}">
+    <script src="/static/js/theme.js?v={{ CACHE_VERSION }}"></script>
+    <style>
+        .container { max-width: 1200px; }
+    </style>
+</head>
+<body>
+
+    <div class="container" style="display: flex; flex-direction: column; justify-content: center; min-height: 100vh;">
+        <div id="live-container" style="position: relative; z-index: 10;">
+            <div class="loader"></div>
+        </div>
+    </div>
+    
+    <canvas id="confetti-canvas"></canvas>
+
+    <!-- Need to include socket.io client script -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.2/socket.io.js?v={{ CACHE_VERSION }}"></script>
+    <script src="/static/js/api.js?v={{ CACHE_VERSION }}"></script>
+    <script src="/static/js/live.js?v={{ CACHE_VERSION }}"></script>
+    <script>
+        const roomCode = "{{ room_code }}";
+        const urlParams = new URLSearchParams(window.location.search);
+        const isHost = urlParams.get('host') === 'true';
+
+        let liveSession;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            liveSession = new LiveQuizSession(roomCode, isHost, 'live-container');
+            liveSession.init();
+        });
+    </script>
+</body>
+</html>
